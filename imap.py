@@ -284,7 +284,7 @@ class MyChrome:
             pass
 
 
-def run(server, user, pw, folder, profile, rakutenPw, markS):
+def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
     mail = MyMailbox(server)
     mail.connect(user, pw, folder)
     ids = mail.filter()
@@ -331,7 +331,7 @@ def run(server, user, pw, folder, profile, rakutenPw, markS):
                         
                     ulogin = chrome.chrome.find_element_by_class_name("loginButton")
                     if uname and upass and ulogin:
-                        uname.send_keys(user)
+                        uname.send_keys(rakutenUser)
                         upass.send_keys(rakutenPw)
                         ulogin.click()
                     else:
@@ -349,7 +349,7 @@ def run(server, user, pw, folder, profile, rakutenPw, markS):
                     except NoSuchElementException:
                         print('could not find element user_id or cta')
                         return 1
-                    uname.send_keys(user)
+                    uname.send_keys(rakutenUser)
                     unext.click()
                     time.sleep(2)
                     try:
@@ -357,7 +357,7 @@ def run(server, user, pw, folder, profile, rakutenPw, markS):
                         ulogin = chrome.chrome.find_element_by_id("cta011")
                         #ulogin = chrome.chrome.find_elements_by_xpath("//div[@id=\"cta\"]")[1]
                     except NoSuchElementException:
-                        print('could not find element user_id or cta2')
+                        print('could not find element rakutenUser or cta2')
                         return 1
                     upass.send_keys(rakutenPw)
                     ulogin.click()
@@ -393,9 +393,10 @@ def main(args):
         rakutenPw = args[6]
     if len(args) >= 8:
         markS = args[7] == "true" or args[7] == "True"
+        rakutenUser = args[8]
 
     # print("{} on {}".format(user, server))
-    return run(server, user, pw, folder, profile, rakutenPw, markS)
+    return run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser)
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv))
