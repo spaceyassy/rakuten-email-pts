@@ -2,7 +2,7 @@
 
 # CONFIGURATION variable format:
 # comma-separated base64 strings of:
-# IMAP_SERVER=<A>;IMAP_FOLDER=<B>;EMAIL_ADDRESS=<C>;EMAIL_PASSWORD=<D>;EMAIL_MARK_READ=<E>;RAKUTEN_PASSWORD=<F>
+# IMAP_SERVER=<A>;IMAP_FOLDER=<B>;EMAIL_ADDRESS=<C>;EMAIL_PASSWORD=<D>;EMAIL_MARK_READ=<E>;RAKUTEN_PASSWORD=<F>;RAKUTEN_ADDRESS=<G>
 # where
 # A: imap server url
 # B: folder to parse emails at
@@ -10,6 +10,7 @@
 # D: email password
 # E: mark unrelated emails in the same folder as read, true or false
 # F: password on rakuten
+# G: email address on rakuten
 
 cache=${CACHE_FOLDER:-cache}
 mkdir -p "$cache"
@@ -25,5 +26,6 @@ while read -r config; do
         "$EMAIL_ADDRESS" \
         "$EMAIL_PASSWORD" \
         "$RAKUTEN_PASSWORD" \
-        "$EMAIL_MARK_READ"
+        "$EMAIL_MARK_READ" \
+        "$RAKUTEN_ADDRESS"
 done
