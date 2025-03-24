@@ -109,6 +109,7 @@ class MyEmail:
                     if "http" in u and not (".png" in u or ".gif" in u or ".jpg" in u):
                         return u
                 break
+                print(f"no shop")
         return None
 
     def tryTextualURL(self):
@@ -138,6 +139,7 @@ class MyEmail:
                 return line
             else:
                 nexturl = False
+                print(f"no txt")
         return None
 
     def tryBannerURL(self):
@@ -158,6 +160,7 @@ class MyEmail:
                         print(f"URL txt2 detected: {u}")  # URL検出メッセージを出力
                         return u
                 break
+                print(f"no banner")
         return None
     
     def retrieveBody(self):
