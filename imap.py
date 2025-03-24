@@ -160,7 +160,7 @@ class MyEmail:
                         print(f"URL txt2 detected: {u}")  # URL検出メッセージを出力
                         return u
                 break
-                print(f"no banner")
+        print(f"no banner")
         return None
     
     def retrieveBody(self):
