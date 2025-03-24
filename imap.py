@@ -125,12 +125,16 @@ class MyEmail:
                 if "http" in line:
                     if 'href="' in line:  # text/htmlの場合
                         return line.split('"')[1]
+                        self.detected_message = line  # 検出されたメッセージを保持
+                        print(f"URL txt detected: {line}")  # URL検出メッセージを出力
                     return line
                 nexturl = True
             elif nexturl and "http" in line:
                 # 次の行にURLが含まれている場合
                 if 'href="' in line:  # text/htmlの場合
                     return line.split('"')[1]
+                    self.detected_message = line  # 検出されたメッセージを保持
+                    print(f"URL txt2 detected: {line}")  # URL検出メッセージを出力
                 return line
             else:
                 nexturl = False
@@ -150,6 +154,8 @@ class MyEmail:
             if banner_url in line:
                 for u in line.split('"'):
                     if "http" in u and not (".png" in u or ".gif" in u or ".jpg" in u):
+                        self.detected_message = u  # 検出されたメッセージを保持
+                        print(f"URL txt2 detected: {u}")  # URL検出メッセージを出力
                         return u
                 break
         return None
