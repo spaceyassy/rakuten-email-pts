@@ -120,7 +120,7 @@ class MyEmail:
         for line in self.body.splitlines():
             if ('↓ クリックでもれなく1ポイントGet!! ↓' in line 
                 or '▼楽天ポイント獲得はこちら▼' in line 
-                or '抽せん券1枚GET！' in line):
+                or 'コンテンツエリア' in line):
                 # 特定のテキストの行にURLが含まれている場合
                 if "http" in line:
                     if 'href="' in line:  # text/htmlの場合
