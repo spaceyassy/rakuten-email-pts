@@ -118,7 +118,7 @@ class MyEmail:
         self.retrieveBody()
         nexturl = False
         for line in self.body.splitlines():
-            if '↓ クリックでもれなく1ポイントGet!! ↓' in line or '▼楽天ポイント獲得はこちら▼' in line:
+            if '↓ クリックでもれなく1ポイントGet!! ↓' in line or '▼楽天ポイント獲得はこちら▼' in line or '抽せん券1枚GET！' in line:
                 nexturl = True
             elif nexturl and "http" in line:
                 if 'href="' in line: # text/html can contain this as well!!!
