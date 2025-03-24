@@ -34,6 +34,7 @@ banner_urls = [
     "://point-g.rakuten.co.jp/mailmag/common/pg_click_banner_btn_2.png",
     "://point-g.rakuten.co.jp/mailmag/common/pg_click_banner_btn_3.png",
     "://image.infoseek.rakuten.co.jp/content/tmail/htmlmail/maildepoint_btn2.gif",
+    "://image.pointmall.rakuten.co.jp/public/special/pointmail/2023/dreamkuji_mail/btn.png",
 ]
 
 class MyEmail:
