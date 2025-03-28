@@ -125,7 +125,7 @@ class MyEmail:
             print(line)
             if ('↓ クリックでもれなく1ポイントGet!! ↓' in line 
                 or '▼楽天ポイント獲得はこちら▼' in line
-                or 'ドリームくじ' in line
+                or '】ドリームくじ（' in line
                 or 'コンテンツエリア' in line):
                 nexturl = True
             elif nexturl and "http" in line:
