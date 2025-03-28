@@ -102,7 +102,7 @@ class MyEmail:
         if not "text/html" in self.msg['Content-Type']:
             return None
         self.retrieveBody()
-        if not "掲載店舗の商品いずれかをクリックしていただいた方" in self.body:
+        if not "期間中に掲載商品のいずれかをクリックしていただいた方" in self.body:
             print(f"not shop mail")
             return None
 
