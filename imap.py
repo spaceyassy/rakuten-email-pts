@@ -124,8 +124,8 @@ class MyEmail:
         self.retrieveBody()
         nexturl = False
         for line in self.body.splitlines():
-            print(nexturl)
-            print(line)
+            #print(nexturl)
+            #print(line)
             if ('↓ クリックでもれなく1ポイントGet!! ↓' in line 
                 or '▼楽天ポイント獲得はこちら▼' in line
                 or '】ドリームくじ（' in line
