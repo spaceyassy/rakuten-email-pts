@@ -131,7 +131,7 @@ class MyEmail:
                 #or 'ここより下↓に本文コンテンツを入れる' in line
                 or 'コンテンツエリア' in line):
                 nexturl = True
-            elif nexturl and "http" in line:
+            elif nexturl and "http" in line and "href" in line:
                 if 'href="' in line:  # text/htmlの場合
                     line = line.split('"')[1]
                     print(f"URL txt detected: {line}")  # URL検出メッセージを出力
