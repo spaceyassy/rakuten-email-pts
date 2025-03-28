@@ -121,12 +121,12 @@ class MyEmail:
         self.retrieveBody()
         nexturl = False
         for line in self.body.splitlines():
+            print(nexturl)
+            print(line)
             if ('↓ クリックでもれなく1ポイントGet!! ↓' in line 
                 or '▼楽天ポイント獲得はこちら▼' in line 
                 or 'コンテンツエリア' in line):
                 nexturl = True
-                print(line)
-                print(nexturl)
             elif nexturl and "http" in line:
                 if 'href="' in line:  # text/htmlの場合
                     line = line.split('"')[1]
