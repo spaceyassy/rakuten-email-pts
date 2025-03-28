@@ -19,11 +19,13 @@ import imaplib
 
 interesting_senders = [
     '楽天特典付きキャンペーンニュース <incentive@emagazine.rakuten.co.jp>',
-    '楽天スーパーポイントギャラリーニュース <point-g@emagazine.rakuten.co.jp>',
+    'ポイントインセンティブニュース <point-g@emagazine.rakuten.co.jp>',
     '楽天カレンダーお得なニュース <calendar-info@emagazine.rakuten.co.jp>',
-    'ポイント10倍ニュース <pointo10henbai@emagazine.rakuten.co.jp>',
+    'ポイントお得情報ニュース <pointo10henbai@emagazine.rakuten.co.jp>',
     'メールdeポイント <info@pointmail.rakuten.co.jp>',
     '楽天ダイヤモンド・プラチナ優待ニュース <platinum-news@emagazine.rakuten.co.jp>',
+    '楽天カードショッピングニュース <shopping@mail.rakuten-card.co.jp>',
+    '<info@rcp.rakuten.co.jp>'
 ]
 #not interesting:
 #Infoseek メールdeポイント事務局 <info@pointmail.rakuten.co.jp>
@@ -122,20 +124,13 @@ class MyEmail:
             if ('↓ クリックでもれなく1ポイントGet!! ↓' in line 
                 or '▼楽天ポイント獲得はこちら▼' in line 
                 or 'コンテンツエリア' in line):
-                # 特定のテキストの行にURLが含まれている場合
-                if "http" in line:
-                    if 'href="' in line:  # text/htmlの場合
-                        return line.split('"')[1]
-                        self.detected_message = line  # 検出されたメッセージを保持
-                        print(f"URL txt detected: {line}")  # URL検出メッセージを出力
-                    return line
                 nexturl = True
+                print(line)
+                print(nexturl)
             elif nexturl and "http" in line:
-                # 次の行にURLが含まれている場合
                 if 'href="' in line:  # text/htmlの場合
-                    return line.split('"')[1]
-                    self.detected_message = line  # 検出されたメッセージを保持
-                    print(f"URL txt2 detected: {line}")  # URL検出メッセージを出力
+                    line = line.split('"')[1]
+                    print(f"URL txt detected: {line}")  # URL検出メッセージを出力
                 return line
             else:
                 nexturl = False
@@ -157,7 +152,7 @@ class MyEmail:
                 for u in line.split('"'):
                     if "http" in u and not (".png" in u or ".gif" in u or ".jpg" in u):
                         self.detected_message = u  # 検出されたメッセージを保持
-                        print(f"URL txt2 detected: {u}")  # URL検出メッセージを出力
+                        print(f"URL banner detected: {u}")  # URL検出メッセージを出力
                         return u
                 break
         print(f"no banner")
@@ -173,7 +168,7 @@ class MyEmail:
                 charset = pref.split('=')[1]
                 break
         self.body = self.bodyFromMsg(self.msg).decode(charset)
-        print(self.body)  # メールの本文を出力
+        #print(self.body)  # メールの本文を出力
 
     def bodyFromMsg(self, b):
         body = ""
