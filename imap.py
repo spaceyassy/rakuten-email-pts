@@ -149,6 +149,7 @@ class MyEmail:
             return None
         for line in self.body.splitlines():
             if banner_url in line:
+                print(line)
                 for u in line.split('"'):
                     if "http" in u and not (".png" in u or ".gif" in u or ".jpg" in u):
                         self.detected_message = u  # 検出されたメッセージを保持
