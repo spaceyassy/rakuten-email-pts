@@ -94,7 +94,8 @@ class MyEmail:
             or ("メールdeポイント" in self.subject and self.subject.count("ポイント") >= 2)
             or "【1ポイントゲット！】" in self.subject
             or "クリックして1ポイント" in self.subject
-        )
+            or "クリックで1ポイント" in self.subject
+            )
         
         return senderchk, subjectchk
 
