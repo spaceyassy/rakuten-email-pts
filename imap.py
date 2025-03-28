@@ -103,15 +103,17 @@ class MyEmail:
             return None
         self.retrieveBody()
         if not "掲載店舗の商品いずれかをクリックしていただいた方" in self.body:
+            print(f"not shop mail")
             return None
 
         for line in self.body.splitlines():
+            print(line)
             if '<tr><td><img' in line and 'href' in line:
                 for u in line.split('"'):
                     if "http" in u and not (".png" in u or ".gif" in u or ".jpg" in u):
                         return u
                 break
-                print(f"no shop")
+        print(f"no shop")
         return None
 
     def tryTextualURL(self):
@@ -126,7 +128,7 @@ class MyEmail:
             if ('↓ クリックでもれなく1ポイントGet!! ↓' in line 
                 or '▼楽天ポイント獲得はこちら▼' in line
                 or '】ドリームくじ（' in line
-                or 'ここより下↓に本文コンテンツを入れる' in line
+                #or 'ここより下↓に本文コンテンツを入れる' in line
                 or 'コンテンツエリア' in line):
                 nexturl = True
             elif nexturl and "http" in line:
