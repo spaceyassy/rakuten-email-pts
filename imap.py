@@ -132,9 +132,9 @@ class MyEmail:
                     line = line.split('"')[1]
                     print(f"URL txt detected: {line}")  # URL検出メッセージを出力
                 return line
-            else:
-                nexturl = False
-                print(f"no txt")
+            #else:
+                #nexturl = False
+        print(f"no txt")
         return None
 
     def tryBannerURL(self):
