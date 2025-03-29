@@ -19,11 +19,13 @@ import imaplib
 
 interesting_senders = [
     '楽天特典付きキャンペーンニュース <incentive@emagazine.rakuten.co.jp>',
-    '楽天スーパーポイントギャラリーニュース <point-g@emagazine.rakuten.co.jp>',
+    'ポイントインセンティブニュース <point-g@emagazine.rakuten.co.jp>',
     '楽天カレンダーお得なニュース <calendar-info@emagazine.rakuten.co.jp>',
-    'ポイント10倍ニュース <pointo10henbai@emagazine.rakuten.co.jp>',
+    'ポイントお得情報ニュース <pointo10henbai@emagazine.rakuten.co.jp>',
     'メールdeポイント <info@pointmail.rakuten.co.jp>',
     '楽天ダイヤモンド・プラチナ優待ニュース <platinum-news@emagazine.rakuten.co.jp>',
+    '楽天カードショッピングニュース <shopping@mail.rakuten-card.co.jp>',
+    '<info@rcp.rakuten.co.jp>'
 ]
 #not interesting:
 #Infoseek メールdeポイント事務局 <info@pointmail.rakuten.co.jp>
@@ -36,7 +38,7 @@ banner_urls = [
     "://image.infoseek.rakuten.co.jp/content/tmail/htmlmail/maildepoint_btn2.gif",
     "://image.pointmall.rakuten.co.jp/public/special/pointmail/2023/dreamkuji_mail/btn.png",
     "://image.pointmall.rakuten.co.jp/public/special/pointmail/programmatic/mv_300_red.png",
-    "://image.pointmall.rakuten.co.jp/public/special/pointmail/programmatic/mv_300_green.png"
+    "://image.pointmall.rakuten.co.jp/public/special/pointmail/programmatic/mv_300_green.png",
 ]
 
 class MyEmail:
@@ -92,7 +94,8 @@ class MyEmail:
             or ("メールdeポイント" in self.subject and self.subject.count("ポイント") >= 2)
             or "【1ポイントゲット！】" in self.subject
             or "クリックして1ポイント" in self.subject
-        )
+            or "クリックで1ポイント" in self.subject
+            )
         
         return senderchk, subjectchk
 
@@ -100,15 +103,18 @@ class MyEmail:
         if not "text/html" in self.msg['Content-Type']:
             return None
         self.retrieveBody()
-        if not "掲載店舗の商品いずれかをクリックしていただいた方" in self.body:
+        if not ("期間中に掲載商品のいずれかをクリックしていただいた方" in self.body or "掲載店舗の商品いずれかをクリックしていただいた方" in self.body):
+            print(f"not shop mail")
             return None
 
         for line in self.body.splitlines():
+            print(line)
             if '<tr><td><img' in line and 'href' in line:
                 for u in line.split('"'):
                     if "http" in u and not (".png" in u or ".gif" in u or ".jpg" in u):
                         return u
                 break
+        print(f"no shop")
         return None
 
     def tryTextualURL(self):
@@ -118,14 +124,23 @@ class MyEmail:
         self.retrieveBody()
         nexturl = False
         for line in self.body.splitlines():
-            if '↓ クリックでもれなく1ポイントGet!! ↓' in line or '▼楽天ポイント獲得はこちら▼' in line:
+            #print(nexturl)
+            #print(line)
+            #下の文字列が見つかってから最初のHTTP かつ src ではない
+            if ('↓ クリックでもれなく1ポイントGet!! ↓' in line 
+                or '▼楽天ポイント獲得はこちら▼' in line
+                or '】ドリームくじ（' in line
+                or 'ここより下↓に本文コンテンツを入れる' in line
+                or 'コンテンツエリア' in line):
                 nexturl = True
-            elif nexturl and "http" in line:
-                if 'href="' in line: # text/html can contain this as well!!!
+            elif nexturl and "http" in line and (not "img src" in line):
+                if 'href="' in line:  # text/htmlの場合
                     line = line.split('"')[1]
+                    print(f"URL txt detected: {line}")  # URL検出メッセージを出力
                 return line
-            else:
-                nexturl = False
+            #else:
+                #nexturl = False
+        print(f"no txt")
         return None
 
     def tryBannerURL(self):
@@ -140,10 +155,14 @@ class MyEmail:
             return None
         for line in self.body.splitlines():
             if banner_url in line:
+                print(line)
                 for u in line.split('"'):
                     if "http" in u and not (".png" in u or ".gif" in u or ".jpg" in u):
+                        self.detected_message = u  # 検出されたメッセージを保持
+                        print(f"URL banner detected: {u}")  # URL検出メッセージを出力
                         return u
                 break
+        print(f"no banner")
         return None
     
     def retrieveBody(self):
@@ -156,6 +175,7 @@ class MyEmail:
                 charset = pref.split('=')[1]
                 break
         self.body = self.bodyFromMsg(self.msg).decode(charset)
+        #print(self.body)  # メールの本文を出力
 
     def bodyFromMsg(self, b):
         body = ""
