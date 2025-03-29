@@ -103,7 +103,7 @@ class MyEmail:
         if not "text/html" in self.msg['Content-Type']:
             return None
         self.retrieveBody()
-        if not "期間中に掲載商品のいずれかをクリックしていただいた方" in self.body:
+        if not ("期間中に掲載商品のいずれかをクリックしていただいた方" in self.body or "掲載店舗の商品いずれかをクリックしていただいた方" in self.body):
             print(f"not shop mail")
             return None
 
@@ -126,13 +126,14 @@ class MyEmail:
         for line in self.body.splitlines():
             #print(nexturl)
             #print(line)
+            #下の文字列が見つかってから最初のHTTP かつ src ではない
             if ('↓ クリックでもれなく1ポイントGet!! ↓' in line 
                 or '▼楽天ポイント獲得はこちら▼' in line
                 or '】ドリームくじ（' in line
                 or 'ここより下↓に本文コンテンツを入れる' in line
                 or 'コンテンツエリア' in line):
                 nexturl = True
-            elif nexturl and "http" in line and "href" in line:
+            elif nexturl and "http" in line and (not "img src" in line):
                 if 'href="' in line:  # text/htmlの場合
                     line = line.split('"')[1]
                     print(f"URL txt detected: {line}")  # URL検出メッセージを出力
