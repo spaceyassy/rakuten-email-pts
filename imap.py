@@ -261,7 +261,7 @@ class MyMailbox:
                 if not url:
                     url = memail.tryAnyShop()
                     if not url:
-                        #print(memail.body)
+                        print(memail.body)
                         print("  no idea. check by yourself!")
                         if markS:
                             print("  Mark email as read.")
