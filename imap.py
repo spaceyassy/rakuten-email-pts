@@ -132,7 +132,8 @@ class MyEmail:
                 or '▼楽天ポイント獲得はこちら▼' in line
                 or '】ドリームくじ（' in line
                 or 'ここより下↓に本文コンテンツを入れる' in line
-                or 'コンテンツエリア' in line):
+                or 'コンテンツエリア' in line
+                or 'クリックで1ポイント' in line):
                 nexturl = True
             elif nexturl and "http" in line and (not "img src" in line):
                 if 'href="' in line:  # text/htmlの場合
@@ -261,7 +262,7 @@ class MyMailbox:
                 if not url:
                     url = memail.tryAnyShop()
                     if not url:
-                        #print(memail.body)
+                        print(memail.body)
                         print("  no idea. check by yourself!")
                         if markS:
                             print("  Mark email as read.")
