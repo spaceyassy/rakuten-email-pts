@@ -177,7 +177,7 @@ class MyEmail:
                 charset = pref.split('=')[1]
                 break
         self.body = self.bodyFromMsg(self.msg).decode(charset)
-        #print(self.body)  # メールの本文を出力
+        print(self.body)  # メールの本文を出力
 
     def bodyFromMsg(self, b):
         body = ""
