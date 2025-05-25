@@ -125,8 +125,8 @@ class MyEmail:
         self.retrieveBody()
         nexturl = False
         for line in self.body.splitlines():
-            #print(nexturl)
-            #print(line)
+            print(nexturl)
+            print(line)
             #下の文字列が見つかってから最初のHTTP かつ src ではない
             if ('↓ クリックでもれなく1ポイントGet!! ↓' in line 
                 or '▼楽天ポイント獲得はこちら▼' in line
@@ -177,7 +177,7 @@ class MyEmail:
                 charset = pref.split('=')[1]
                 break
         self.body = self.bodyFromMsg(self.msg).decode(charset)
-        print(self.body)  # メールの本文を出力
+        #print(self.body)  # メールの本文を出力
 
     def bodyFromMsg(self, b):
         body = ""
