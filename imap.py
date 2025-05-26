@@ -133,6 +133,7 @@ class MyEmail:
                 or '】ドリームくじ（' in line
                 or 'ここより下↓に本文コンテンツを入れる' in line
                 or 'コンテンツエリア' in line
+                or 'クリックポイントここからスタート' in line
                 or 'クリックで1ポイント' in line):
                 nexturl = True
             elif nexturl and "http" in line and (not "img src" in line):
@@ -146,8 +147,8 @@ class MyEmail:
                #     print (test)
                #     line = line.split('"')[1]
                #     print(f"URL txt detected: {line}")  # URL検出メッセージを出力
-            #else:
-                #nexturl = False
+            else:
+                nexturl = False
         print(f"no txt")
         return None
 
