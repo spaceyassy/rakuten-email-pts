@@ -147,8 +147,8 @@ class MyEmail:
                #     print (test)
                #     line = line.split('"')[1]
                #     print(f"URL txt detected: {line}")  # URL検出メッセージを出力
-            else:
-                nexturl = False
+            #else:
+                #nexturl = False
         print(f"no txt")
         return None
 
