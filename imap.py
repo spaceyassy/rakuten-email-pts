@@ -113,6 +113,7 @@ class MyEmail:
             if '<tr><td><img' in line and 'href' in line:
                 for u in line.split('"'):
                     if "http" in u and not (".png" in u or ".gif" in u or ".jpg" in u):
+                        print(f"URL detected: {u}") 
                         return u
                 break
         print(f"no shop")
@@ -125,8 +126,8 @@ class MyEmail:
         self.retrieveBody()
         nexturl = False
         for line in self.body.splitlines():
-            print(nexturl)
-            print(line)
+            #print(nexturl)
+            #print(line)
             #下の文字列が見つかってから最初のHTTP かつ src ではない
             if ('↓ クリックでもれなく1ポイントGet!! ↓' in line 
                 or '▼楽天ポイント獲得はこちら▼' in line
