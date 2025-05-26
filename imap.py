@@ -138,8 +138,8 @@ class MyEmail:
             elif nexturl and "http" in line and (not "img src" in line):
                 for u in line.split('"'):
                     if "http" in u and not (".png" in u or ".gif" in u or ".jpg" in u):
-                    print(f"URL txt detected: {u}") 
-                    return u
+                        print(f"URL txt detected: {u}") 
+                        return u
                 break
                # if 'href="' in line:  # text/htmlの場合
                #     test = line.split('"') #herfが見つかったので”で区切って確認
