@@ -143,10 +143,10 @@ class MyEmail:
                         print(f"URL txt detected: {u}") 
                         return u
                 break
-               # if 'href="' in line:  # text/htmlの場合
+               # if 'href="' in line:  # text/htmlの場合 #アドレスの誤検出をしたので、httpを抽出する方法に変更
                #     test = line.split('"') #herfが見つかったので”で区切って確認
                #     print (test)
-               #     line = line.split('"')[1]
+               #     line = line.split('"')[1] 
                #     print(f"URL txt detected: {line}")  # URL検出メッセージを出力
             #else:
                 #nexturl = False
