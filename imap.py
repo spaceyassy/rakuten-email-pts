@@ -113,6 +113,7 @@ class MyEmail:
             if '<tr><td><img' in line and 'href' in line:
                 for u in line.split('"'):
                     if "http" in u and not (".png" in u or ".gif" in u or ".jpg" in u):
+                        print(f"URL detected: {u}") 
                         return u
                 break
         print(f"no shop")
@@ -133,13 +134,20 @@ class MyEmail:
                 or '】ドリームくじ（' in line
                 or 'ここより下↓に本文コンテンツを入れる' in line
                 or 'コンテンツエリア' in line
+                or 'クリックポイントここからスタート' in line
                 or 'クリックで1ポイント' in line):
                 nexturl = True
             elif nexturl and "http" in line and (not "img src" in line):
-                if 'href="' in line:  # text/htmlの場合
-                    line = line.split('"')[1]
-                    print(f"URL txt detected: {line}")  # URL検出メッセージを出力
-                return line
+                for u in line.split('"'):
+                    if "http" in u and not (".png" in u or ".gif" in u or ".jpg" in u):
+                        print(f"URL txt detected: {u}") 
+                        return u
+                break
+               # if 'href="' in line:  # text/htmlの場合 #アドレスの誤検出をしたので、httpを抽出する方法に変更
+               #     test = line.split('"') #herfが見つかったので”で区切って確認
+               #     print (test)
+               #     line = line.split('"')[1] 
+               #     print(f"URL txt detected: {line}")  # URL検出メッセージを出力
             #else:
                 #nexturl = False
         print(f"no txt")
