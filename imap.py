@@ -137,7 +137,8 @@ class MyEmail:
                 or 'クリックポイントここからスタート' in line
                 or 'クリックで1ポイント' in line):
                 nexturl = True
-            elif nexturl and "http" in line and (not "img src" in line):
+            elif nexturl and "http" in line: # and (not "img src" in line)の条件削除
+                print(line)
                 for u in line.split('"'):
                     if "http" in u and not (".png" in u or ".gif" in u or ".jpg" in u):
                         print(f"URL txt detected: {u}") 
