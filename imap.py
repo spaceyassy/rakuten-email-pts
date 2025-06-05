@@ -143,7 +143,7 @@ class MyEmail:
                     if "http" in u and not (".png" in u or ".gif" in u or ".jpg" in u):
                         print(f"URL txt detected: {u}") 
                         return u
-                break
+               #break
                # if 'href="' in line:  # text/htmlの場合 #アドレスの誤検出をしたので、httpを抽出する方法に変更
                #     test = line.split('"') #herfが見つかったので”で区切って確認
                #     print (test)
@@ -164,10 +164,14 @@ class MyEmail:
                 break
         if not banner_url:
             return None
-        for line in self.body.splitlines():
+        lines = self.body.splitlines() #いったんLinesに格納
+        for index, line in enumerate(lines): #enumerateでインデックス取得
             if banner_url in line:
-                print(line)
-                for u in line.split('"'):
+                #print(lines[index-1])
+                #print(lines[index])
+                line2 = lines[index-1] + lines[index]+ lines[index+1] #urlの前後1行を追加してURL検索
+                print(line2)
+                for u in line2.split('"'):
                     if "http" in u and not (".png" in u or ".gif" in u or ".jpg" in u):
                         self.detected_message = u  # 検出されたメッセージを保持
                         print(f"URL banner detected: {u}")  # URL検出メッセージを出力
