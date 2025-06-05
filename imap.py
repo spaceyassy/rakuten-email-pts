@@ -163,10 +163,13 @@ class MyEmail:
                 break
         if not banner_url:
             return None
-        for line in self.body.splitlines():
+        for i, line in enumerate(self.body.splitlines()): #enumerateでインデックス取得
             if banner_url in line:
+                print(line[i -1])
                 print(line)
-                for u in line.split('"'):
+                line2 = line[i -1] + line
+                print(line2)
+                for u in line2.split('"'):
                     if "http" in u and not (".png" in u or ".gif" in u or ".jpg" in u):
                         self.detected_message = u  # 検出されたメッセージを保持
                         print(f"URL banner detected: {u}")  # URL検出メッセージを出力
