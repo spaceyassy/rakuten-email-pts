@@ -164,7 +164,7 @@ class MyEmail:
         if not banner_url:
             return None
 
-        lines = self.body.splitlines(): #いったんLinesに格納
+        lines = self.body.splitlines() #いったんLinesに格納
         
         for index, line in enumerate(lines): #enumerateでインデックス取得
             if banner_url in line:
