@@ -163,11 +163,14 @@ class MyEmail:
                 break
         if not banner_url:
             return None
-        for index, line in enumerate(self.body.splitlines()): #enumerateでインデックス取得
+
+        lines = self.body.splitlines(): #いったんLinesに格納
+        
+        for index, line in enumerate(lines): #enumerateでインデックス取得
             if banner_url in line:
-                print(line[index -1])
-                print(line)
-                line2 = line[index -1] + line
+                print(lines[index-1])
+                print(lines[index])
+                line2 = lines[index-1] + lines[index]
                 print(line2)
                 for u in line2.split('"'):
                     if "http" in u and not (".png" in u or ".gif" in u or ".jpg" in u):
