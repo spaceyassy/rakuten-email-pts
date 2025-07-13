@@ -17,6 +17,9 @@ import datetime
 import getpass
 import imaplib
 
+import tempfile
+import shutil
+
 interesting_senders = [
     '楽天特典付きキャンペーンニュース <incentive@emagazine.rakuten.co.jp>',
     'ポイントインセンティブニュース <point-g@emagazine.rakuten.co.jp>',
@@ -413,8 +416,11 @@ def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
     return 0
 
 def main(args):
+    # Chrome用の一時ディレクトリ作成（毎回ユニーク）
+    profile = tempfile.mkdtemp(prefix='chrome-profile-')
+    # ...（元の処理）...
 
-    profile = './chrome-profile'
+    #profile = './chrome-profile'
     server = "imap.gmx.net"
     folder = "INBOX"
     user = "email@gmail.com"
@@ -422,7 +428,7 @@ def main(args):
     markS = False
 
     if len(args) >= 6:
-        profile = args[1]
+        #profile = args[1]
         server = args[2]
         folder = args[3]
         user = args[4]
@@ -433,7 +439,12 @@ def main(args):
         rakutenUser = args[8]
 
     # print("{} on {}".format(user, server))
-    return run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser)
-
+    #return run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser)
+    try:
+        return run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser)
+    finally:
+        # 終了後に一時ディレクトリを削除
+        shutil.rmtree(profile, ignore_errors=True)
+        
 if __name__ == "__main__":
     sys.exit(main(sys.argv))
