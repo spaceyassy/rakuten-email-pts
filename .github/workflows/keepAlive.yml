@@ -24,5 +24,5 @@ jobs:
           GH_REPO: ${{ github.repository }}
         # ここで本ワークフローと併せて対象のワークフロー“hoge.yml”を有効化
         run: |
-          gh workflow enable keepalive.yml
+          gh workflow enable keepAlive.yml
           gh workflow enable main.yml
