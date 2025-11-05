@@ -1,0 +1,28 @@
+name: Prevent scheduled workflow from being automatically disabled
+
+on:
+  schedule:
+    # 毎月1日の24時（JST）に実行
+    - cron: "00 15 1 * *"
+  workflow_dispatch:
+
+concurrency:
+  group: keepalive
+  cancel-in-progress: false
+
+jobs:
+
+  keepalive:
+    permissions:
+      actions: write
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Re-enable workflow
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        # ここで本ワークフローと併せて対象のワークフロー“hoge.yml”を有効化
+        run: |
+          gh workflow enable keepAlive.yml
+          gh workflow enable main.yml
