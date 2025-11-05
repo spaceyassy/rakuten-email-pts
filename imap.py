@@ -17,6 +17,9 @@ import datetime
 import getpass
 import imaplib
 
+import tempfile
+import shutil
+
 interesting_senders = [
     '楽天特典付きキャンペーンニュース <incentive@emagazine.rakuten.co.jp>',
     'ポイントインセンティブニュース <point-g@emagazine.rakuten.co.jp>',
@@ -40,6 +43,7 @@ banner_urls = [
     "://image.pointmall.rakuten.co.jp/public/special/pointmail/programmatic/mv_300_red.png",
     "://image.pointmall.rakuten.co.jp/public/special/pointmail/programmatic/mv_300_green.png",
     "://image.pointmall.rakuten.co.jp/pointmail/tmail/htmlmail/point1.gif",
+    "://event.rakuten.co.jp/incentive/ichiba/mailmag/common/clickbanner.png"
 ]
 
 class MyEmail:
@@ -414,8 +418,11 @@ def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
     return 0
 
 def main(args):
+    # Chrome用の一時ディレクトリ作成（毎回ユニーク）
+    profile = tempfile.mkdtemp(prefix='chrome-profile-')
+    # ...（元の処理）...
 
-    profile = './chrome-profile'
+    #profile = './chrome-profile'
     server = "imap.gmx.net"
     folder = "INBOX"
     user = "email@gmail.com"
@@ -423,7 +430,7 @@ def main(args):
     markS = False
 
     if len(args) >= 6:
-        profile = args[1]
+        #profile = args[1]
         server = args[2]
         folder = args[3]
         user = args[4]
@@ -434,7 +441,12 @@ def main(args):
         rakutenUser = args[8]
 
     # print("{} on {}".format(user, server))
-    return run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser)
-
+    #return run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser)
+    try:
+        return run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser)
+    finally:
+        # 終了後に一時ディレクトリを削除
+        shutil.rmtree(profile, ignore_errors=True)
+        
 if __name__ == "__main__":
     sys.exit(main(sys.argv))
