@@ -2,7 +2,7 @@ name: check emails for points
 
 on:
   schedule:
-  - cron:  "30 2 * * *"
+  - cron:  "30 7 * * *"
   workflow_dispatch:
 
 permissions:
