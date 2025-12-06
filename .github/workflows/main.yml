@@ -33,7 +33,7 @@ jobs:
     - name: run main
       uses: nick-fields/retry@v2
       with:
-        timeout_minutes: 5    # タイムアウト5分に短縮
+        timeout_minutes: 10    # タイムアウト10分に短縮
         max_attempts: 3
         retry_on: error, timeout  # タイムアウトも再試行対象にする
         retry_wait_seconds: 10    # タイムアウト待機10秒
