@@ -33,10 +33,10 @@ jobs:
     - name: run main
       uses: nick-fields/retry@v2
       with:
-        timeout_minutes: 10    # タイムアウト10分に短縮
-        max_attempts: 3
+        timeout_minutes: 15    # タイムアウト15分に短縮
+        max_attempts: 4
         retry_on: error, timeout  # タイムアウトも再試行対象にする
-        retry_wait_seconds: 10    # タイムアウト待機10秒
+        retry_wait_seconds: 15    # タイムアウト待機10秒
         command: bash main.sh
       env:
         CONFIGURATION: ${{ secrets.CONFIGURATION }}
