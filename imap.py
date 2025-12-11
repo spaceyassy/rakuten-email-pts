@@ -108,7 +108,7 @@ class MyEmail:
         if not "text/html" in self.msg['Content-Type']:
             return None
         self.retrieveBody()
-        if not ("期間中に掲載商品のいずれかをクリックしていただいた方" in self.body or "掲載店舗の商品いずれかをクリックしていただいた方" in self.body[...]
+        if not ("期間中に掲載商品のいずれかをクリックしていただいた方" in self.body or "掲載店舗の商品いずれかをクリックしていただいた方" in self.body):
             print(f"not shop mail")
             return None
 
@@ -297,33 +297,6 @@ class MyMailbox:
     def markSeen(self, id):
         self.conn.store(id,'+FLAGS','\Seen')
 
-    def markAllUnseen(self):
-        """
-        Mark all messages that are currently SEEN -> remove \Seen flag.
-        This searches for 'SEEN' messages in the selected mailbox and
-        issues a single STORE to remove the \Seen flag for the sequence set.
-        """
-        try:
-            res, data = self.conn.search(None, 'SEEN')
-            if res != 'OK':
-                print("markAllUnseen: search failed:", res, data)
-                return False
-            if not data or not data[0]:
-                print("markAllUnseen: no messages with SEEN flag found")
-                return True
-            ids = data[0].split()
-            # build a comma-separated sequence set: "1,2,3"
-            idlist = ",".join([id.decode() for id in ids])
-            rv, rdata = self.conn.store(idlist, '-FLAGS', '\\Seen')
-            if rv != 'OK':
-                print("markAllUnseen: store failed:", rv, rdata)
-                return False
-            print(f"markAllUnseen: marked {len(ids)} messages as unseen")
-            return True
-        except Exception as e:
-            print("markAllUnseen: exception:", e)
-            return False
-
 
 class MyChrome:
     def __init__(self):
@@ -356,12 +329,6 @@ class MyChrome:
 def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
     mail = MyMailbox(server)
     mail.connect(user, pw, folder)
-
-    # --- ここで一旦すべての既読フラグを外して未読に戻す ---
-    # 必要に応じてこの呼び出しをコメントアウト／条件付きにしてください
-    mail.markAllUnseen()
-    # -----------------------------------------------------
-
     ids = mail.filter()
     if len(ids) > 0:
         print("Checking {} unseen emails...".format(len(ids)))
