@@ -264,7 +264,7 @@ class MyMailbox:
             memail = MyEmail(msgstr)
 
             print()
-            print(memail)
+            #print(memail)
             senderchk, subjectchk = memail.checkSenderSubject()
             if not senderchk and not subjectchk:
                 print("  Uninteresting. SKIP.")
