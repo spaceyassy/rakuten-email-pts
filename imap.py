@@ -204,16 +204,14 @@ class MyEmail:
             for part in b.walk():
                 ctype = part.get_content_type()
                 cdispo = str(part.get('Content-Disposition'))
-                # skip any text/plain (txt) attachments
-                if ctype == 'text/plain' and 'attachment' not in cdispo:
+                # text/plain と text/html の両方を対象に（添付ファイル除外）
+                if ctype in ('text/plain', 'text/html') and 'attachment' not in cdispo:
                     payload = part.get_payload(decode=True)
                     if payload:
                         body += payload
-        # not multipart - i.e. plain text, no attachments, keeping fingers crossed
         else:
             body = b.get_payload(decode=True)
         return body
-    
     
     def __repr__(self):
         r = ''
