@@ -44,7 +44,8 @@ banner_urls = [
     "://image.pointmall.rakuten.co.jp/public/special/pointmail/programmatic/mv_300_red.png",
     "://image.pointmall.rakuten.co.jp/public/special/pointmail/programmatic/mv_300_green.png",
     "://image.pointmall.rakuten.co.jp/pointmail/tmail/htmlmail/point1.gif",
-    "://event.rakuten.co.jp/incentive/ichiba/mailmag/common/clickbanner.png"
+    "://event.rakuten.co.jp/incentive/ichiba/mailmag/common/clickbanner.png",
+    "://rimage.gnst.jp/www.gnavi.co.jp/mail_img/ggnews_mail/common/header_logo_sp_dark.png"
 ]
 
 class MyEmail:
