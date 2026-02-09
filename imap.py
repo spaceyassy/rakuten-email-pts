@@ -133,7 +133,7 @@ class MyEmail:
         nexturl = False
         for line in self.body.splitlines():
             #print(nexturl)
-            #print(line)
+            print(line)
             #下の文字列が見つかってから最初のHTTP かつ src ではない
             if ('↓ クリックでもれなく1ポイントGet!! ↓' in line 
                 or '▼楽天ポイント獲得はこちら▼' in line
