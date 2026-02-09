@@ -199,20 +199,22 @@ class MyEmail:
         #print(self.body)  # メールの本文を出力
 
     def bodyFromMsg(self, b):
-        body = ""
-        if b.is_multipart():
-            for part in b.walk():
-                ctype = part.get_content_type()
-                cdispo = str(part.get('Content-Disposition'))
-                # skip any text/plain (txt) attachments
-                if ctype == 'text/plain' and 'attachment' not in cdispo:
-                    body = part.get_payload(decode=True)  # decode
-                    break
-        # not multipart - i.e. plain text, no attachments, keeping fingers crossed
-        else:
-            body = b.get_payload(decode=True)
-        return body
-
+    body = b''
+    if b.is_multipart():
+        for part in b.walk():
+            ctype = part.get_content_type()
+            cdispo = str(part.get('Content-Disposition'))
+            # skip any text/plain (txt) attachments
+            if ctype == 'text/plain' and 'attachment' not in cdispo:
+                payload = part.get_payload(decode=True)
+                if payload:
+                    body += payload
+    # not multipart - i.e. plain text, no attachments, keeping fingers crossed
+    else:
+        body = b.get_payload(decode=True)
+    return body
+    
+    
     def __repr__(self):
         r = ''
         if '様' in self.subject:
