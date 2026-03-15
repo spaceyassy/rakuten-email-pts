@@ -29,7 +29,9 @@ interesting_senders = [
     '楽天ダイヤモンド・プラチナ優待ニュース <platinum-news@emagazine.rakuten.co.jp>',
     '楽天カードショッピングニュース <shopping@mail.rakuten-card.co.jp>',
     '<info@rcp.rakuten.co.jp>',
-    '<gnavi-member@gnavi.co.jp>'
+    '<gnavi-member@gnavi.co.jp>',
+    '<pointmall-news@emagazine.rakuten.co.jp>',
+    '<cardnews@mail.rakuten-card.co.jp>'
 ]
 #not interesting:
 #Infoseek メールdeポイント事務局 <info@pointmail.rakuten.co.jp>
