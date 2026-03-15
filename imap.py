@@ -105,6 +105,7 @@ class MyEmail:
             or "クリックして1ポイント" in self.subject
             or "クリックで1ポイント" in self.subject
             or "ポイント付" in self.subject
+            or "ドリームくじ抽せん券付き" in self.subject
             )
         
         return senderchk, subjectchk
