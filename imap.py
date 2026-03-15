@@ -140,7 +140,9 @@ class MyEmail:
                 or 'ここより下↓に本文コンテンツを入れる' in line
                 or 'コンテンツエリア' in line
                 or 'クリックポイントここからスタート' in line
-                or 'クリックで1ポイント' in line):
+                or 'クリックで1ポイント' in line
+                or 'ゲームで遊んで楽しく買って楽天ポイントGET！' in line
+               ):
                 nexturl = True
             elif nexturl and "http" in line: # and (not "img src" in line)の条件削除
                 print(line)
