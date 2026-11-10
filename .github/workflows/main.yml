@@ -39,8 +39,17 @@ jobs:
         retry_wait_seconds: 15    # タイムアウト待機15秒
         command: bash main.sh
       env:
-        CONFIGURATION: ${{ secrets.CONFIGURATION }}
-    - name: Save folder
+        CONFIGURATION: ${{ secrets.CONFIGURATION}}
+    
+    - name: Upload login screenshot
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: login-screenshot
+        path: login-click-intercepted.png
+        if-no-files-found: ignore
+ 
+     - name: Save folder
       id: cache-folder-save
       uses: actions/cache/save@v3
       with:
