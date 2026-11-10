@@ -559,6 +559,63 @@ def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
                         print("Language selector button detected.")
                         lang_btn.click()
 
+                        # 言語選択後に表示されるポップアップの状態を記録する。
+                        # この段階では×をクリックせず、iframeの有無を確認する。
+                        time.sleep(1)
+
+                        driver = chrome.chrome
+                        screenshot_path = (
+                            f"language-popup-frame-check-{int(time.time() * 1000)}.png"
+                        )
+
+                        try:
+                            saved = driver.save_screenshot(screenshot_path)
+                            print(
+                                f"Language popup screenshot saved: "
+                                f"{screenshot_path} (success={saved})"
+                            )
+                        except Exception as screenshot_error:
+                            print(
+                                "Could not save language popup screenshot:",
+                                screenshot_error
+                            )
+
+                        frames = driver.find_elements(By.TAG_NAME, "iframe")
+                        print(f"Language popup check: {len(frames)} iframe(s) found.")
+
+                        for index, frame in enumerate(frames):
+                            try:
+                                rect = driver.execute_script(
+                                    """
+                                    const r = arguments[0].getBoundingClientRect();
+                                    return {
+                                        x: Math.round(r.x),
+                                        y: Math.round(r.y),
+                                        width: Math.round(r.width),
+                                        height: Math.round(r.height)
+                                    };
+                                    """,
+                                    frame
+                                )
+
+                                print(
+                                    "iframe[{}]: id={!r}, name={!r}, title={!r}, "
+                                    "src={!r}, displayed={}, rect={}".format(
+                                        index,
+                                        frame.get_attribute("id"),
+                                        frame.get_attribute("name"),
+                                        frame.get_attribute("title"),
+                                        frame.get_attribute("src"),
+                                        frame.is_displayed(),
+                                        rect
+                                    )
+                                )
+                            except Exception as frame_error:
+                                print(
+                                    f"Could not inspect iframe[{index}]:",
+                                    frame_error
+                                )
+                                
                         # 「Enjoy our service in English」の文言は使わず、
                         # ポップアップ右上の小さなボタンを位置から探して閉じる。
                         close_popup_script = """
