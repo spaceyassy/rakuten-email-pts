@@ -559,159 +559,18 @@ def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
                         print("Language selector button detected.")
                         lang_btn.click()
 
-                        # 「Enjoy our service in English!」確認ポップアップの
-                        # 右上にある×ボタンを探す
-                        find_confirmation_close_position = r"""
-                            const normalize = value =>
-                                (value || '').replace(/\s+/g, ' ').trim();
-
-                            const roots = [document];
-                            let title = null;
-
-                            while (roots.length && !title) {
-                                const root = roots.pop();
-
-                                for (const el of root.querySelectorAll('*')) {
-                                    if (el.shadowRoot) {
-                                        roots.push(el.shadowRoot);
-                                    }
-
-                                    const text = normalize(
-                                        el.innerText || el.textContent
-                                    );
-
-                                    if (text === 'Enjoy our service in English!') {
-                                        title = el;
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if (!title) {
-                                return null;
-                            }
-
-                            // 見出しから親要素をたどり、ポップアップ本体を探す
-                            let modal = title;
-                            while (modal && modal !== document.body) {
-                                const rect = modal.getBoundingClientRect();
-
-                                if (rect.width >= 350 && rect.height >= 150) {
-                                    return {
-                                        x: rect.right - 20,
-                                        y: rect.top + 20
-                                    };
-                                }
-
-                                modal = modal.parentElement;
-                            }
-
-                            return null;
-                        """
-
-                        try:
-                            close_position = WebDriverWait(
-                                chrome.chrome, 15
-                            ).until(
-                                lambda driver: driver.execute_script(
-                                    find_confirmation_close_position
-                                )
-                            )
-
-                            # ポップアップ右上の×をクリック
-                            clicked = chrome.chrome.execute_script(
-                                """
-                                const el = document.elementFromPoint(
-                                    arguments[0],
-                                    arguments[1]
-                                );
-                                if (!el) return false;
-
-                                const target =
-                                    el.closest('button, [role="button"]') || el;
-                                target.click();
-                                return true;
-                                """,
-                                close_position["x"],
-                                close_position["y"],
-                            )
-
-                            if not clicked:
-                                raise TimeoutException(
-                                    "Could not click the language confirmation close button"
-                                )
-
-                            # 確認ポップアップが消えるまで待つ
-                            def confirmation_popup_is_gone(driver):
-                                return driver.execute_script(r"""
-                                    const normalize = value =>
-                                        (value || '').replace(/\s+/g, ' ').trim();
-
-                                    const roots = [document];
-
-                                    while (roots.length) {
-                                        const root = roots.pop();
-
-                                        for (const el of root.querySelectorAll('*')) {
-                                            if (el.shadowRoot) {
-                                                roots.push(el.shadowRoot);
-                                            }
-
-                                            if (
-                                                normalize(
-                                                    el.innerText || el.textContent
-                                                ) ===
-                                                'Enjoy our service in English!'
-                                            ) {
-                                                const rect =
-                                                    el.getBoundingClientRect();
-                                                const style =
-                                                    window.getComputedStyle(el);
-
-                                                if (
-                                                    rect.width > 0 &&
-                                                    rect.height > 0 &&
-                                                    style.display !== 'none' &&
-                                                    style.visibility !== 'hidden'
-                                                ) {
-                                                    return false;
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    return true;
-                                """)
-
-                            WebDriverWait(chrome.chrome, 10).until(
-                                confirmation_popup_is_gone
-                            )
-                            print("Language confirmation popup closed.")
-
-                        except Exception:
-                            # タイムアウトなどの失敗時は画面を保存してから再送出
-                            save_language_screenshot(
-                                chrome.chrome,
-                                "confirmation-close-error"
-                            )
-                            print(
-                                "Could not close the language confirmation popup."
-                            )
-                            raise
-
-                        # ポップアップが消えてからNextを押す
-                        click_when_uncovered(
-                            chrome.chrome,
-                            (By.ID, "cta001")
-                        )
-
                     except Exception:
+                        # 検索失敗・クリック失敗のどちらでも画像を保存してから再送出
                         save_language_screenshot(
                             chrome.chrome,
-                            "language-flow-error"
+                            "selector-error"
                         )
+                        print("Language selector detection/click failed.")
                         raise
-                        
+
+                    # 2) その後にNextを押す
+                    click_when_uncovered(chrome.chrome, (By.ID, "cta001"))
+
                     # 3) Nextの後に言語ポップアップが出る場合も対応
                     try:
                         lang_btn = WebDriverWait(chrome.chrome, 15).until(
