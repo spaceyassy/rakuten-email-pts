@@ -7,6 +7,9 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import *
 import time
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 from datetime import date
 import mailbox
@@ -354,6 +357,41 @@ class MyChrome:
         except:
             pass
 
+def click_when_uncovered(driver, locator, timeout=10):
+    wait = WebDriverWait(driver, timeout)
+
+    # ボタンが表示され、操作可能になるまで待つ
+    element = wait.until(EC.element_to_be_clickable(locator))
+    driver.execute_script(
+        "arguments[0].scrollIntoView({block: 'center', inline: 'nearest'});",
+        element,
+    )
+
+    # ボタンの中央を別の要素が覆っていない状態になるまで待つ
+    def is_uncovered(d):
+        try:
+            target = d.find_element(*locator)
+            if not target.is_displayed() or not target.is_enabled():
+                return False
+
+            return d.execute_script("""
+                const el = arguments[0];
+                const rect = el.getBoundingClientRect();
+                const x = rect.left + rect.width / 2;
+                const y = rect.top + rect.height / 2;
+                const topElement = document.elementFromPoint(x, y);
+                return topElement === el || el.contains(topElement);
+            """, target)
+        except StaleElementReferenceException:
+            return False
+
+    wait.until(is_uncovered)
+
+    try:
+        wait.until(EC.element_to_be_clickable(locator)).click()
+    except ElementClickInterceptedException:
+        driver.save_screenshot("login-click-intercepted.png")
+        raise
 
 def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
     mail = MyMailbox(server)
@@ -414,31 +452,57 @@ def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
                     else:
                         print("LOGIN FAILED. quit.")
                         return 2
+                # 新しいログイン画面
+                try:
+                    uname = WebDriverWait(chrome.chrome, 10).until(
+                        EC.visibility_of_element_located((By.ID, "user_id"))
+                    )
+                except TimeoutException:
+                    print("could not find visible user_id field")
+                    return 1
 
-                # new site:
-                pwsite = chrome.chrome.find_elements_by_xpath("//input[@id=\"user_id\"]")
-                if len(pwsite) > 0:
-                    print("INPUT field FOUND. try logging in...")
-                    time.sleep(2)
-                    try:
-                        uname = chrome.chrome.find_element_by_id("user_id")
-                        unext = chrome.chrome.find_element_by_id("cta001")
-                    except NoSuchElementException:
-                        print('could not find element user_id or cta')
-                        return 1
-                    uname.send_keys(rakutenUser)
-                    unext.click()
-                    time.sleep(2)
-                    try:
-                        upass = chrome.chrome.find_element_by_id("password_current")
-                        ulogin = chrome.chrome.find_element_by_id("cta011")
-                        #ulogin = chrome.chrome.find_elements_by_xpath("//div[@id=\"cta\"]")[1]
-                    except NoSuchElementException:
-                        print('could not find element rakutenUser or cta2')
-                        return 1
-                    upass.send_keys(rakutenPw)
-                    ulogin.click()
-                    time.sleep(2)
+                print("INPUT field FOUND. try logging in...")
+                uname.send_keys(rakutenUser)
+
+                click_when_uncovered(chrome.chrome, (By.ID, "cta001"))
+
+                try:
+                    upass = WebDriverWait(chrome.chrome, 10).until(
+                        EC.visibility_of_element_located(
+                            (By.ID, "password_current")
+                        )
+                    )
+                except TimeoutException:
+                    print("could not find visible password field")
+                    return 1
+
+                upass.send_keys(rakutenPw)
+                click_when_uncovered(chrome.chrome, (By.ID, "cta011"))
+
+#                # new site:
+#                pwsite = chrome.chrome.find_elements_by_xpath("//input[@id=\"user_id\"]")
+#                if len(pwsite) > 0:
+#                    print("INPUT field FOUND. try logging in...")
+#                    time.sleep(2)
+#                    try:
+#                        uname = chrome.chrome.find_element_by_id("user_id")
+#                        unext = chrome.chrome.find_element_by_id("cta001")
+#                    except NoSuchElementException:
+#                        print('could not find element user_id or cta')
+#                        return 1
+#                    uname.send_keys(rakutenUser)
+#                    unext.click()
+#                    time.sleep(2)
+#                    try:
+#                        upass = chrome.chrome.find_element_by_id("password_current")
+#                        ulogin = chrome.chrome.find_element_by_id("cta011")
+#                        #ulogin = chrome.chrome.find_elements_by_xpath("//div[@id=\"cta\"]")[1]
+#                    except NoSuchElementException:
+#                        print('could not find element rakutenUser or cta2')
+#                        return 1
+#                    upass.send_keys(rakutenPw)
+#                    ulogin.click()
+#                    time.sleep(2)
 
                 print("Mark email as read...")
                 mail.markSeen(fid)
