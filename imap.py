@@ -666,7 +666,7 @@ def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
 
                         if not popup_closed:
                             chrome.chrome.save_screenshot(
-                                "language-info-popup-close-not-found.png"
+                                "language-popup-close-not-found.png"
                             )
                             print(
                                 "Popup close control not found; "
