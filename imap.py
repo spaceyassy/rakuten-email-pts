@@ -474,10 +474,10 @@ def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
                     print("INPUT field FOUND. try logging in...")
                     uname.send_keys(rakutenUser)
 
-                    # 1) Next を押す
+                    # 1. UserID入力後にNextを押す
                     click_when_uncovered(chrome.chrome, (By.ID, "cta001"))
-                    
-                    # 2) 次に言語ポップアップが出るので、それを探す
+
+                    # 2. その後に言語選択ポップアップが出るので探す
                     language_button = (
                         By.XPATH,
                         "//*[normalize-space(.)='Select language']"
@@ -495,18 +495,20 @@ def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
                         )
                         print("Language popup found.")
                         lang_btn.click()
+                        WebDriverWait(chrome.chrome, 10).until(
+                            EC.invisibility_of_element_located(language_button)
+                        )
                     except TimeoutException:
                         print("Language popup not found after Next.")
-                        raise
+                        pass
 
-                    # 3) パスワード入力欄を待つ
-                    upass = WebDriverWait(chrome.chrome, 10).until(
-                        EC.visibility_of_element_located(
-                            (By.ID, "password_current")
-                        )
+                    # 3. パスワード欄を待って入力
+                    upass = WebDriverWait(chrome.chrome, 15).until(
+                        EC.visibility_of_element_located((By.ID, "password_current"))
                     )
                     upass.send_keys(rakutenPw)
                     click_when_uncovered(chrome.chrome, (By.ID, "cta011"))
+                    
 
 #                # new site:
 #                pwsite = chrome.chrome.find_elements_by_xpath("//input[@id=\"user_id\"]")
