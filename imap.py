@@ -338,6 +338,14 @@ class MyChrome:
         options = Options()
         if headless:
             options.add_argument('--headless=new')
+
+            # ブラウザーの言語を日本語優先にする
+            options.add_argument('--lang=ja-JP')
+            options.add_experimental_option(
+                'prefs',
+                {'intl.accept_languages': 'ja,ja-JP,en-US,en'}
+            )
+            
             #options.add_argument("--no-sandbox")
             #options.add_argument('--lang=en_US')
             #options.add_argument('--window-size=1920x1080');
