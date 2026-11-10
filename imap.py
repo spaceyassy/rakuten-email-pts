@@ -1,4 +1,4 @@
-#!python3
+            #!python3
 
 import sys
 import os
@@ -474,59 +474,36 @@ def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
                     print("INPUT field FOUND. try logging in...")
                     uname.send_keys(rakutenUser)
 
-                 # ボタンのタグやroleに限定せず、表示テキストで探す
-                    language_button = (
-                        By.XPATH,
-                        "//*[normalize-space(.)='Select language']"
+                    # 1) 先に Next を押す
+                    next_btn = WebDriverWait(chrome.chrome, 10).until(
+                        EC.element_to_be_clickable((By.ID, "cta001"))
                     )
+                    next_btn.click()
 
+                    # 2) その後、言語選択ポップアップが出るのでそれを押す
                     try:
-                        button = WebDriverWait(chrome.chrome, 10).until(
-                            lambda driver: next(
-                                (
-                                    element
-                                    for element in driver.find_elements(
-                                        *language_button
-                                    )
-                                    if element.is_displayed()
-                                    and element.is_enabled()
+                        lang_btn = WebDriverWait(chrome.chrome, 10).until(
+                            lambda d: next(
+                                (            
+                                    el for el in d.find_elements(
+                                        By.XPATH,
+                                        "//*[normalize-space(.)='Select language']"
+                                    )        
+                                    if el.is_displayed() and el.is_enabled()
                                 ),
-                                False,
+                                None
                             )
                         )
+                        print("Language popup found. Selecting language.")
+                        lang_btn.click()
                     except TimeoutException:
-                        chrome.chrome.save_screenshot(
-                            "language-popup-not-found.png"
-                        )
-                        print(
-                            "Language popup button not found in the current "
-                            "document. iframe count:",
-                            len(chrome.chrome.find_elements(By.TAG_NAME, "iframe")),
-                        )
+                        print("Language popup did not appear after Next click.")
                         raise
 
-                    print("Language popup button found.")
-                    button.click()
-
-                    WebDriverWait(chrome.chrome, 10).until(
-                        EC.invisibility_of_element_located(language_button)
+                    # 3) パスワード欄が出るのを待つ
+                    upass = WebDriverWait(chrome.chrome, 10).until(            
+                        EC.visibility_of_element_located((By.ID, "password_current"))
                     )
-                    print("Language popup closed.")
-
-                    click_when_uncovered(
-                        chrome.chrome, (By.ID, "cta001")
-                    )
-
-                    try:
-                        upass = WebDriverWait(chrome.chrome, 10).until(
-                            EC.visibility_of_element_located(
-                                (By.ID, "password_current")
-                            )
-                        )
-                    except TimeoutException:
-                        print("could not find visible password field")
-                        return 1
-
                     upass.send_keys(rakutenPw)
                     click_when_uncovered(chrome.chrome, (By.ID, "cta011"))
                 
