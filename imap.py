@@ -473,7 +473,6 @@ def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
 
                     print("INPUT field FOUND. try logging in...")
                     uname.send_keys(rakutenUser)
-                    uname.send_keys(rakutenUser)
 
                     # 言語選択ポップアップが表示された場合は、
                     # 現在選択されている言語（画像ではEnglish）のまま確定する
