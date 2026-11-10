@@ -360,35 +360,43 @@ class MyChrome:
 def click_when_uncovered(driver, locator, timeout=10):
     wait = WebDriverWait(driver, timeout)
 
-    # ボタンが表示され、操作可能になるまで待つ
-    element = wait.until(EC.element_to_be_clickable(locator))
-    driver.execute_script(
-        "arguments[0].scrollIntoView({block: 'center', inline: 'nearest'});",
-        element,
-    )
+    try:
+        # ボタンが表示され、操作可能になるまで待つ
+        element = wait.until(EC.element_to_be_clickable(locator))
+        driver.execute_script(
+            "arguments[0].scrollIntoView({block: 'center', inline: 'nearest'});",
+            element,
+        )
 
-    # ボタンの中央を別の要素が覆っていない状態になるまで待つ
-    def is_uncovered(d):
-        try:
-            target = d.find_element(*locator)
-            if not target.is_displayed() or not target.is_enabled():
+        # ボタンの中央を別の要素が覆っていない状態になるまで待つ
+        def is_uncovered(d):
+            try:
+                target = d.find_element(*locator)
+                if not target.is_displayed() or not target.is_enabled():
+                    return False
+
+                return d.execute_script("""
+                    const el = arguments[0];
+                    const rect = el.getBoundingClientRect();
+                    const x = rect.left + rect.width / 2;
+                    const y = rect.top + rect.height / 2;
+                    const topElement = document.elementFromPoint(x, y);
+                    return topElement === el || el.contains(topElement);
+                """, target)
+            except StaleElementReferenceException:
                 return False
 
-            return d.execute_script("""
-                const el = arguments[0];
-                const rect = el.getBoundingClientRect();
-                const x = rect.left + rect.width / 2;
-                const y = rect.top + rect.height / 2;
-                const topElement = document.elementFromPoint(x, y);
-                return topElement === el || el.contains(topElement);
-            """, target)
-        except StaleElementReferenceException:
-            return False
-
-    wait.until(is_uncovered)
-
-    try:
+        wait.until(is_uncovered)
         wait.until(EC.element_to_be_clickable(locator)).click()
+
+    except TimeoutException:
+        try:
+            driver.save_screenshot("login-click-intercepted.png")
+            print("Timeout screenshot saved. Current URL:", driver.current_url)
+        except Exception as screenshot_error:
+            print("Could not save timeout screenshot:", screenshot_error)
+        raise
+
     except ElementClickInterceptedException:
         driver.save_screenshot("login-click-intercepted.png")
         raise
