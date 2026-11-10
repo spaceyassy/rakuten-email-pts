@@ -48,8 +48,8 @@ jobs:
         name: login-screenshot
         path: |
           login-click-intercepted.png
-          language-popup-not-found.png
-        if-no-files-found: ignore
+          language-popup-*.png
+        if-no-files-found: warn
  
     - name: Save folder
       id: cache-folder-save
