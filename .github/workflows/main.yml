@@ -46,7 +46,9 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: login-screenshot
-        path: login-click-intercepted.png
+        path: |
+          login-click-intercepted.png
+          language-popup-not-found.png
         if-no-files-found: ignore
  
     - name: Save folder
