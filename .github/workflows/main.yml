@@ -49,7 +49,7 @@ jobs:
         path: login-click-intercepted.png
         if-no-files-found: ignore
  
-     - name: Save folder
+    - name: Save folder
       id: cache-folder-save
       uses: actions/cache/save@v3
       with:
