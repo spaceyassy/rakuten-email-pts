@@ -481,7 +481,7 @@ def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
                     )
 
                     try:
-                        lang_btn = WebDriverWait(chrome.chrome, 5).until(
+                        lang_btn = WebDriverWait(chrome.chrome, 15).until(
                             lambda d: next(
                                 (
                                     el for el in d.find_elements(*language_button)
@@ -503,7 +503,7 @@ def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
 
                     # 3) Nextの後に言語ポップアップが出る場合も対応
                     try:
-                        lang_btn = WebDriverWait(chrome.chrome, 5).until(
+                        lang_btn = WebDriverWait(chrome.chrome, 15).until(
                             lambda d: next(
                                 (
                                     el for el in d.find_elements(*language_button)
