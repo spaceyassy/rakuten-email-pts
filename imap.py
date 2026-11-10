@@ -709,26 +709,119 @@ def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
                             return false;
                         """
 
+                        # ポップアップの×候補を調査する。
+                        # この診断ではクリックしない。
+                        inspect_popup_controls = """
+                            const visible = el => {
+                                const r = el.getBoundingClientRect();
+                                const s = getComputedStyle(el);
+                                return r.width > 0 && r.height > 0 &&
+                                       s.display !== 'none' &&
+                                       s.visibility !== 'hidden' &&
+                                       Number(s.opacity) > 0;
+                            };
+
+                            const panels = [
+                                ...document.querySelectorAll(
+                                    '[role="dialog"], [aria-modal="true"]'
+                                )
+                            ];
+
+                            for (const el of document.querySelectorAll('div, section')) {
+                                if (!visible(el)) continue;
+
+                                const r = el.getBoundingClientRect();
+                                const s = getComputedStyle(el);
+                                const panelStyle =
+                                    s.position === 'fixed' ||
+                                    s.position === 'absolute' ||
+                                    s.boxShadow !== 'none';
+
+                                if (
+                                    panelStyle &&
+                                    r.width >= 200 &&
+                                    r.height >= 100 &&
+                                    r.width < window.innerWidth * 0.95 &&
+                                    r.height < window.innerHeight * 0.95
+                                ) {
+                                    panels.push(el);
+                                }
+                            }
+
+                            const results = [];
+
+                            for (const panel of panels) {
+                                if (!visible(panel)) continue;
+
+                                const p = panel.getBoundingClientRect();
+                                const controls = [
+                                    ...panel.querySelectorAll(
+                                        'button, [role="button"], [tabindex], [onclick]'
+                                    )
+                                ].filter(visible);
+
+                                for (const el of controls) {
+                                    const r = el.getBoundingClientRect();
+                                    const nearTopRight =
+                                        r.left >= p.right - 72 &&
+                                        r.top <= p.top + 72;
+
+                                    if (
+                                        nearTopRight &&
+                                        r.width <= 48 &&
+                                        r.height <= 48
+                                    ) {
+                                        results.push({
+                                            tag: el.tagName,
+                                            text: (el.innerText || el.textContent || '')
+                                                .trim()
+                                                .slice(0, 100),
+                                            ariaLabel: el.getAttribute('aria-label'),
+                                            title: el.getAttribute('title'),
+                                            className: el.getAttribute('class'),
+                                            outerHTML: el.outerHTML.slice(0, 500),
+                                            rect: {
+                                                x: Math.round(r.x),
+                                                y: Math.round(r.y),
+                                                width: Math.round(r.width),
+                                                height: Math.round(r.height)
+                                            },
+                                            panelRect: {
+                                                x: Math.round(p.x),
+                                                y: Math.round(p.y),
+                                                width: Math.round(p.width),
+                                                height: Math.round(p.height)
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+
+                            return results;
+                        """
+
+                        popup_controls = chrome.chrome.execute_script(
+                            inspect_popup_controls
+                        )
+                        print(
+                            "Popup top-right control candidates:",
+                            popup_controls
+                        )
+
+                        diagnostic_path = (
+                            f"language-popup-controls-{int(time.time() * 1000)}.png"
+                        )
+                        saved = chrome.chrome.save_screenshot(diagnostic_path)
+                        print(
+                            f"Popup control diagnostic screenshot saved: "
+                            f"{diagnostic_path} (success={saved})"
+                        )
+
                         popup_closed = False
-                        popup_close_deadline = time.time() + 5
-
-                        while time.time() < popup_close_deadline:
-                            popup_closed = chrome.chrome.execute_script(
-                                close_popup_script
-                            )
-                            if popup_closed:
-                                print("Closed the popup using its top-right control.")
-                                break
-                            time.sleep(0.25)
-
-                        if not popup_closed:
-                            chrome.chrome.save_screenshot(
-                                "language-popup-close-not-found.png"
-                            )
-                            print(
-                                "Popup close control not found; "
-                                "screenshot saved."
-                            )
+                        print(
+                            "Diagnostic only: popup was not clicked. "
+                            "Inspect the candidate list and screenshot."
+                        )
 
                     except Exception:
                         # 検索失敗・クリック失敗のどちらでも画像を保存してから再送出
