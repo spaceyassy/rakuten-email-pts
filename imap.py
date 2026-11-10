@@ -407,7 +407,7 @@ def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
 
     # --- ここで一旦すべての既読フラグを外して未読に戻す ---
     # 必要に応じてこの呼び出しをコメントアウト／条件付きにしてください
-    mail.markAllUnseen()
+    #mail.markAllUnseen()
     # -----------------------------------------------------
 
     ids = mail.filter()
