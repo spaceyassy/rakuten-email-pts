@@ -474,11 +474,30 @@ def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
                     print("INPUT field FOUND. try logging in...")
                     uname.send_keys(rakutenUser)
 
-                    # 1) まず言語ポップアップが出ていないか確認
+                    # まずは言語ポップアップの見出しとボタンを広めに探す
+                    language_title = (
+                        By.XPATH,
+                        "//*[contains(., 'Choose your language') or contains(., 'Select language')]"
+                    )
                     language_button = (
                         By.XPATH,
-                        "//*[normalize-space(.)='Select language']"
+                        "//*[contains(translate(normalize-space(string(.)), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'select language') or contains(@aria-label, 'Select language') or contains(@alt, 'Select language')]"
                     )
+
+                    try:
+                        popup = WebDriverWait(chrome.chrome, 15).until(
+                            lambda d: next(
+                                (
+                                    el for el in d.find_elements(*language_title)
+                                    if el.is_displayed()
+                                ),
+                                None
+                            )
+                        )
+                        print("Language popup title detected.")
+                    except TimeoutException:
+                        print("Language popup title not found.")
+                        popup = None
 
                     try:
                         lang_btn = WebDriverWait(chrome.chrome, 15).until(
@@ -490,13 +509,11 @@ def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
                                 None
                             )
                         )
-                        print("Language popup already visible. Closing it first.")
+                        print("Language selector button detected.")
                         lang_btn.click()
-                        WebDriverWait(chrome.chrome, 10).until(
-                            EC.invisibility_of_element_located(language_button)
-                        )
                     except TimeoutException:
-                        print("Language popup is not visible yet.")
+                        print("Language selector button not found.")
+                        raise
 
                     # 2) その後にNextを押す
                     click_when_uncovered(chrome.chrome, (By.ID, "cta001"))
