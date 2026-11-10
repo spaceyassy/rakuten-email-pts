@@ -474,6 +474,18 @@ def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
                     print("INPUT field FOUND. try logging in...")
                     uname.send_keys(rakutenUser)
 
+                    def save_language_timeout_screenshot(driver, reason):
+                        screenshot_path = "language-popup-not-found.png"
+                        try:
+                            saved = driver.save_screenshot(screenshot_path)
+                            print(
+                                f"Timeout screenshot saved: {screenshot_path} "
+                                f"(success={saved}, reason={reason})"
+                            )
+                            print("Current URL:", driver.current_url)
+                        except Exception as screenshot_error:
+                            print("Could not save timeout screenshot:", screenshot_error)
+                            
                     # まずは言語ポップアップの見出しとボタンを広めに探す
                     language_title = (
                         By.XPATH,
@@ -498,6 +510,10 @@ def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
                         )
                         print("Language popup title detected.")
                     except TimeoutException:
+                        save_language_timeout_screenshot(
+                            chrome.chrome,
+                            "language popup title not found"
+                        )
                         print("Language popup title not found.")
                         popup = None
 
@@ -514,6 +530,10 @@ def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
                         print("Language selector button detected.")
                         lang_btn.click()
                     except TimeoutException:
+                        save_language_timeout_screenshot(
+                            chrome.chrome,
+                            "language selector button not found"
+                        )
                         print("Language selector button not found.")
                         raise
 
