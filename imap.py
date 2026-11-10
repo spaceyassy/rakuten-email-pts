@@ -486,55 +486,86 @@ def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
                         except Exception as screenshot_error:
                             print("Could not save timeout screenshot:", screenshot_error)
                             
-                    # まずは言語ポップアップの見出しとボタンを広めに探す
-                    language_title = (
-                        By.XPATH,
-                        "//*[normalize-space(.)='Choose your language' "
-                        "or normalize-space(.)='Select language' "
-                        "or normalize-space(.)='English']"
-                    )
-                    language_button = (
-                        By.XPATH,
-                        "//*[contains(translate(normalize-space(string(.)), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'select language') or contains(@aria-label, 'Select language') or contains(@alt, 'Select language')]"
-                    )
-
-                    try:
-                        popup = WebDriverWait(chrome.chrome, 15).until(
-                            lambda d: next(
-                                (
-                                    el for el in d.find_elements(*language_title)
-                                    if el.is_displayed()
-                                ),
-                                None
+                    def save_language_screenshot(driver, reason):
+                        # リトライごとに別ファイルにし、前の画像を上書きしない
+                        screenshot_path = (
+                            f"language-popup-{reason}-{int(time.time() * 1000)}.png"
+                        )
+                        try:
+                            saved = driver.save_screenshot(screenshot_path)
+                            print(
+                                f"Screenshot saved: {screenshot_path} "
+                                f"(success={saved})"
                             )
-                        )
-                        print("Language popup title detected.")
-                    except TimeoutException:
-                        save_language_timeout_screenshot(
-                            chrome.chrome,
-                            "language popup title not found"
-                        )
-                        print("Language popup title not found.")
-                        popup = None
+                        except Exception as screenshot_error:
+                            print("Could not save screenshot:", screenshot_error)
+
+                    # 通常DOMとShadow DOMの両方から、表示中の
+                    # 「Select language」要素を探す
+                    find_language_button = """
+                        const normalize = value =>
+                            (value || '').replace(/\\s+/g, ' ').trim().toLowerCase();
+
+                        const roots = [document];
+
+                        while (roots.length) {
+                            const root = roots.pop();
+
+                            for (const el of root.querySelectorAll('*')) {
+                                if (el.shadowRoot) {
+                                    roots.push(el.shadowRoot);
+                                }
+
+                                const label = normalize(
+                                    el.innerText ||
+                                    el.textContent ||
+                                    el.getAttribute('aria-label')
+                                );
+
+                                if (label !== 'select language') {
+                                    continue;
+                                }
+
+                                const target =
+                                    el.closest(
+                                        'button, [role="button"], ' +
+                                        'input[type="button"], input[type="submit"]'
+                                    ) || el;
+
+                                const rect = target.getBoundingClientRect();
+                                const style = window.getComputedStyle(target);
+
+                                if (
+                                    rect.width > 0 &&
+                                    rect.height > 0 &&
+                                    style.display !== 'none' &&
+                                    style.visibility !== 'hidden' &&
+                                    target.disabled !== true
+                                ) {
+                                    return target;
+                                }
+                            }
+                        }
+
+                        return null;
+                    """
 
                     try:
                         lang_btn = WebDriverWait(chrome.chrome, 15).until(
-                            lambda d: next(
-                                (
-                                    el for el in d.find_elements(*language_button)
-                                    if el.is_displayed() and el.is_enabled()
-                                ),
-                                None
+                            lambda driver: driver.execute_script(
+                                find_language_button
                             )
                         )
                         print("Language selector button detected.")
                         lang_btn.click()
-                    except TimeoutException:
-                        save_language_timeout_screenshot(
+
+                    except Exception:
+                        # 検索失敗・クリック失敗のどちらでも画像を保存してから再送出
+                        save_language_screenshot(
                             chrome.chrome,
-                            "language selector button not found"
+                            "selector-error"
                         )
-                        print("Language selector button not found.")
+                        print("Language selector detection/click failed.")
                         raise
 
                     # 2) その後にNextを押す
