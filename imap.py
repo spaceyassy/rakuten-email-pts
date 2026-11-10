@@ -559,6 +559,120 @@ def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
                         print("Language selector button detected.")
                         lang_btn.click()
 
+                        # 「Enjoy our service in English」の文言は使わず、
+                        # ポップアップ右上の小さなボタンを位置から探して閉じる。
+                        close_popup_script = """
+                            const visible = el => {
+                                const r = el.getBoundingClientRect();
+                                const s = getComputedStyle(el);
+                                return r.width > 0 && r.height > 0 &&
+                                       s.display !== 'none' &&
+                                       s.visibility !== 'hidden' &&
+                                       Number(s.opacity) > 0;
+                            };
+
+                            // 言語選択ボタンと同様に、Shadow DOM も検索する。
+                            const roots = [document];
+                            while (roots.length) {
+                                const root = roots.pop();
+
+                                for (const host of root.querySelectorAll('*')) {
+                                    if (host.shadowRoot) {
+                                        roots.push(host.shadowRoot);
+                                    }
+                                }
+
+                                // ポップアップらしい領域を探す。
+                                const panels = [
+                                    ...root.querySelectorAll(
+                                        '[role="dialog"], [aria-modal="true"]'
+                                    )
+                                ];
+
+                                for (const el of root.querySelectorAll('div, section')) {
+                                    if (panels.includes(el) || !visible(el)) continue;
+
+                                    const r = el.getBoundingClientRect();
+                                    const s = getComputedStyle(el);
+                                    const hasPanelStyle =
+                                        s.position === 'fixed' ||
+                                        s.position === 'absolute' ||
+                                        s.boxShadow !== 'none';
+
+                                    if (
+                                        hasPanelStyle &&
+                                        r.width >= 200 &&
+                                        r.height >= 100 &&
+                                        r.width < window.innerWidth * 0.95 &&
+                                        r.height < window.innerHeight * 0.95
+                                    ) {
+                                        panels.push(el);
+                                    }
+                                }
+
+                                for (const panel of panels) {
+                                    if (!visible(panel)) continue;
+
+                                    const p = panel.getBoundingClientRect();
+                                    const controls = [
+                                        ...panel.querySelectorAll(
+                                            'button, [role="button"], [tabindex], [onclick]'
+                                        )
+                                    ].filter(visible);
+
+                                    // ×に相当する、ポップアップ右上の小さな操作要素を選ぶ。
+                                    const candidates = controls
+                                        .map(el => {
+                                            const r = el.getBoundingClientRect();
+                                            const nearTopRight =
+                                                r.left >= p.right - 72 &&
+                                                r.top <= p.top + 72;
+
+                                            return {
+                                                el,
+                                                distance:
+                                                    Math.abs(p.right - r.right) +
+                                                    Math.abs(r.top - p.top),
+                                                matches:
+                                                    nearTopRight &&
+                                                    r.width <= 48 &&
+                                                    r.height <= 48
+                                            };
+                                        })
+                                        .filter(item => item.matches)
+                                        .sort((a, b) => a.distance - b.distance);
+
+                                    if (candidates.length) {
+                                        candidates[0].el.click();
+                                        return true;
+                                    }
+                                }
+                            }
+
+                            return false;
+                        """
+
+                        popup_closed = False
+                        popup_close_deadline = time.time() + 5
+
+                        while time.time() < popup_close_deadline:
+                            popup_closed = chrome.chrome.execute_script(
+                                close_popup_script
+                            )
+                            if popup_closed:
+                                print("Closed the popup using its top-right control.")
+                                break
+                            time.sleep(0.25)
+
+                        if not popup_closed:
+                            chrome.chrome.save_screenshot(
+                                "language-info-popup-close-not-found.png"
+                            )
+                            print(
+                                "Popup close control not found; "
+                                "screenshot saved."
+                            )
+
                     except Exception:
                         # 検索失敗・クリック失敗のどちらでも画像を保存してから再送出
                         save_language_screenshot(
