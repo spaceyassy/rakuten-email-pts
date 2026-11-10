@@ -473,7 +473,28 @@ def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
 
                     print("INPUT field FOUND. try logging in...")
                     uname.send_keys(rakutenUser)
+                    uname.send_keys(rakutenUser)
 
+                    # 言語選択ポップアップが表示された場合は、
+                    # 現在選択されている言語（画像ではEnglish）のまま確定する
+                    language_button = (
+                        By.XPATH,
+                        "//button[normalize-space(.)='Select language']"
+                        " | //*[@role='button' and normalize-space(.)='Select language']"
+                        " | //input[@value='Select language']"
+                    )
+                    try:
+                        WebDriverWait(chrome.chrome, 3).until(
+                            EC.visibility_of_element_located(language_button)
+                        )
+                    except TimeoutException:
+                        pass  # ポップアップがなければ通常どおり続行
+                    else:
+                        click_when_uncovered(
+                            chrome.chrome, language_button, timeout=10
+                        )
+
+                    # ポップアップを確定した後、ログイン画面の「次へ」を押す
                     click_when_uncovered(chrome.chrome, (By.ID, "cta001"))
 
                     try:
