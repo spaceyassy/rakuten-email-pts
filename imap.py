@@ -482,18 +482,26 @@ def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
                         " | //*[@role='button' and normalize-space(.)='Select language']"
                         " | //input[@value='Select language']"
                     )
-                    try:
-                        WebDriverWait(chrome.chrome, 3).until(
-                            EC.visibility_of_element_located(language_button)
-                        )
-                    except TimeoutException:
-                        pass  # ポップアップがなければ通常どおり続行
-                    else:
+
+                    # ポップアップがある場合は確定し、閉じたことを確認する
+                    buttons = chrome.chrome.find_elements(*language_button)
+                    visible_buttons = [b for b in buttons if b.is_displayed()]
+
+                    if visible_buttons:
+                        print("Language popup found; selecting current language.")
                         click_when_uncovered(
                             chrome.chrome, language_button, timeout=10
                         )
+                        WebDriverWait(chrome.chrome, 10).until(
+                            EC.invisibility_of_element_located(language_button)
+                        )
+                        print("Language popup closed.")
+                    else:
+                        print("Language popup button not found.")
+                        chrome.chrome.save_screenshot(
+                            "language-popup-not-found.png"
+                        )
 
-                    # ポップアップを確定した後、ログイン画面の「次へ」を押す
                     click_when_uncovered(chrome.chrome, (By.ID, "cta001"))
 
                     try:
