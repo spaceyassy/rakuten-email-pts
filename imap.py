@@ -452,33 +452,35 @@ def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
                     else:
                         print("LOGIN FAILED. quit.")
                         return 2
-                # 新しいログイン画面
-                try:
-                    uname = WebDriverWait(chrome.chrome, 10).until(
-                        EC.visibility_of_element_located((By.ID, "user_id"))
-                    )
-                except TimeoutException:
-                    print("could not find visible user_id field")
-                    return 1
 
-                print("INPUT field FOUND. try logging in...")
-                uname.send_keys(rakutenUser)
-
-                click_when_uncovered(chrome.chrome, (By.ID, "cta001"))
-
-                try:
-                    upass = WebDriverWait(chrome.chrome, 10).until(
-                        EC.visibility_of_element_located(
-                            (By.ID, "password_current")
+                # 新しいログイン画面の場合だけ実行
+                if chrome.chrome.find_elements(By.ID, "user_id"):
+                    try:
+                        uname = WebDriverWait(chrome.chrome, 10).until(
+                            EC.visibility_of_element_located((By.ID, "user_id"))
                         )
-                    )
-                except TimeoutException:
-                    print("could not find visible password field")
-                    return 1
+                    except TimeoutException:
+                        print("could not find visible user_id field")
+                        return 1
 
-                upass.send_keys(rakutenPw)
-                click_when_uncovered(chrome.chrome, (By.ID, "cta011"))
+                    print("INPUT field FOUND. try logging in...")
+                    uname.send_keys(rakutenUser)
 
+                    click_when_uncovered(chrome.chrome, (By.ID, "cta001"))
+
+                    try:
+                        upass = WebDriverWait(chrome.chrome, 10).until(
+                            EC.visibility_of_element_located(
+                                (By.ID, "password_current")
+                            )
+                        )
+                    except TimeoutException:
+                        print("could not find visible password field")
+                        return 1
+
+                    upass.send_keys(rakutenPw)
+                    click_when_uncovered(chrome.chrome, (By.ID, "cta011"))
+                
 #                # new site:
 #                pwsite = chrome.chrome.find_elements_by_xpath("//input[@id=\"user_id\"]")
 #                if len(pwsite) > 0:
