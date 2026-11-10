@@ -495,7 +495,7 @@ def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
                         )
                         print("Language popup found.")
                         lang_btn.click()
-                     except TimeoutException
+                	except TimeoutException:
                         print("Language popup not found after Next.")
                         # ここで失敗をログに残す
                         raise
