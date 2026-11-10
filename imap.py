@@ -477,7 +477,9 @@ def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
                     # まずは言語ポップアップの見出しとボタンを広めに探す
                     language_title = (
                         By.XPATH,
-                        "//*[contains(., 'Choose your language') or contains(., 'Select language')]"
+                        "//*[normalize-space(.)='Choose your language' "
+                        "or normalize-space(.)='Select language' "
+                        "or normalize-space(.)='English']"
                     )
                     language_button = (
                         By.XPATH,
