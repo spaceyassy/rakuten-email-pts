@@ -495,14 +495,15 @@ def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
                         )
                         print("Language popup found.")
                         lang_btn.click()
-                	except TimeoutException:
+                    except TimeoutException:
                         print("Language popup not found after Next.")
-                        # ここで失敗をログに残す
                         raise
 
                     # 3) パスワード入力欄を待つ
                     upass = WebDriverWait(chrome.chrome, 10).until(
-                        EC.visibility_of_element_located((By.ID, "password_current"))
+                        EC.visibility_of_element_located(
+                            (By.ID, "password_current")
+                        )
                     )
                     upass.send_keys(rakutenPw)
                     click_when_uncovered(chrome.chrome, (By.ID, "cta011"))
