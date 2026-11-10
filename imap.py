@@ -642,7 +642,7 @@ def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
                             time.sleep(0.2)
 
                         if not close_done:
-                            screenshot_path = f"english-popup-close-not-found-{int(time.time() * 1000)}.png"
+                            screenshot_path = f"language-popup-english-popup-close-not-found-{int(time.time() * 1000)}.png"
                             try:
                                 chrome.chrome.save_screenshot(screenshot_path)
                                 print(f"English popup close button not found. Screenshot: {screenshot_path}")
