@@ -705,6 +705,13 @@ def run(server, user, pw, folder, profile, rakutenPw, markS, rakutenUser):
                             (By.ID, "cta001")
                         )
 
+                    except Exception:
+                        save_language_screenshot(
+                            chrome.chrome,
+                            "language-flow-error"
+                        )
+                        raise
+                        
                     # 3) Nextの後に言語ポップアップが出る場合も対応
                     try:
                         lang_btn = WebDriverWait(chrome.chrome, 15).until(
